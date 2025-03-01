@@ -1,2 +1,2 @@
 # ce-216-project
-game library project for ce 216
+this projcet is a representation of a game library forour fundemental topics in programming lecture          <br>
