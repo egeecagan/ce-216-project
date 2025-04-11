@@ -1,0 +1,74 @@
+[
+  {
+    "title": "Test Game",
+    "genre": "Adventure",
+    "developer": "TestDev",
+    "publisher": "TestPublisher",
+    "platforms": [
+      "PC",
+      "Xbox"
+    ],
+    "translators": [
+      "Translator1"
+    ],
+    "steamId": "12345",
+    "releaseYear": 2025,
+    "playtime": 50,
+    "format": "Digital",
+    "language": "English",
+    "rating": "E",
+    "tags": [
+      "Action",
+      "Indie"
+    ],
+    "coverImagePath": "path/to/cover.jpg"
+  },
+  {
+    "title": "Test Game",
+    "genre": "Adventure",
+    "developer": "TestDev",
+    "publisher": "TestPublisher",
+    "platforms": [
+      "PC",
+      "Xbox"
+    ],
+    "translators": [
+      "Translator1"
+    ],
+    "steamId": "12345",
+    "releaseYear": 2025,
+    "playtime": 50,
+    "format": "Digital",
+    "language": "English",
+    "rating": "E",
+    "tags": [
+      "Action",
+      "Indie"
+    ],
+    "coverImagePath": "path/to/cover.jpg"
+  },
+  {
+    "title": "Test Game",
+    "genre": "Adventure",
+    "developer": "TestDev",
+    "publisher": "TestPublisher",
+    "platforms": [
+      "PC",
+      "Xbox"
+    ],
+    "translators": [
+      "Translator1"
+    ],
+    "steamId": "12345",
+    "releaseYear": 2025,
+    "playtime": 50,
+    "format": "Digital",
+    "language": "English",
+    "rating": "E",
+    "tags": [
+      "Action",
+      "Indie"
+    ],
+    "coverImagePath": "path/to/cover.jpg"
+  }
+]
