@@ -9,13 +9,12 @@ public class Game {
     private List<String> translators;
     private String steamId;
     private int releaseYear;
-    private int playtime;  
-    private String format;  
+    private int playtime;  // in hours
+    private String format;  // e.g., Digital, Physical
     private String language;
     private String rating;
     private List<String> tags;
     private String coverImagePath;
-
 
     public Game(String title, String genre, String developer, String publisher, List<String> platforms,
                 List<String> translators, String steamId, int releaseYear, int playtime, String format,
@@ -36,7 +35,6 @@ public class Game {
         this.coverImagePath = coverImagePath;
     }
 
-    
     public String getTitle() {
         return title;
     }
@@ -149,8 +147,12 @@ public class Game {
         this.coverImagePath = coverImagePath;
     }
 
+    // Helper methods for UI
+    public String getYearString() { return String.valueOf(releaseYear); }
+    public String getImagePath() { return coverImagePath; }
+    public String getPlatformsString() { return String.join(", ", platforms); }
+    public String getTagsString() { return String.join(", ", tags); }
 
-   
     @Override
     public String toString() {
         return "Game{" +
