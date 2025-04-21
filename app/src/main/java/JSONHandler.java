@@ -14,73 +14,27 @@ public class JSONHandler {
     private Gson gson;
 
     public JSONHandler() {
-      
-        gson = new GsonBuilder().setPrettyPrinting().create();
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-
-    public void addGameToJSON(Game game, File file) {
-        List<Game> games = importFromJSON(file);
-        if (games == null) {
-            games = new ArrayList<>();
-        }
-        games.add(game);
-        exportToJson(games, file);
-    }
-
-
-    public void deleteGameFromJSON(Game game, File file) {
-        List<Game> games = importFromJSON(file);
-        if (games != null) {
-            games.removeIf(g -> g.getTitle().equals(game.getTitle()));
-            exportToJson(games, file);
-        }
-    }
-
-  
-    public void addGameByName(String title, Game game, File file) {
-        List<Game> games = importFromJSON(file);
-        if (games == null) {
-            games = new ArrayList<>();
-        }
-        boolean exists = games.stream().anyMatch(g -> g.getTitle().equals(title));
-        if (!exists) {
-            games.add(game);
-            exportToJson(games, file);
-        }
-    }
-
- 
-    public void deleteGameByName(String title, File file) {
-        List<Game> games = importFromJSON(file);
-        if (games != null) {
-            games.removeIf(g -> g.getTitle().equals(title));
-            exportToJson(games, file);
-        }
-    }
-
-   
     public List<Game> importFromJSON(File file) {
-        List<Game> games = new ArrayList<>();
         try (FileReader reader = new FileReader(file)) {
-            Type gameListType = new TypeToken<List<Game>>() {}.getType();
-            games = gson.fromJson(reader, gameListType);
-            if (games == null) {
-                games = new ArrayList<>();
-            }
+            Type gameListType = new TypeToken<List<Game>>(){}.getType();
+            List<Game> games = gson.fromJson(reader, gameListType);
+            return games != null ? games : new ArrayList<>();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error reading JSON file: " + e.getMessage());
+            return new ArrayList<>();
         }
-        return games;
     }
 
- 
-    public void exportToJson(List<Game> games, File file) {
+    public boolean exportToJSON(List<Game> games, File file) {
         try (FileWriter writer = new FileWriter(file)) {
             gson.toJson(games, writer);
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error writing JSON file: " + e.getMessage());
+            return false;
         }
     }
-
 }
