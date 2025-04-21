@@ -1,0 +1,67 @@
+[
+  {
+    "title": "The Witcher 3: Wild Hunt",
+    "genre": "RPG",
+    "developer": "CD Projekt Red",
+    "publisher": "CD Projekt",
+    "platforms": ["PC", "PlayStation 4", "Xbox One", "Nintendo Switch"],
+    "translators": [],
+    "steamId": "292030",
+    "releaseYear": 2015,
+    "playtime": 100,
+    "format": "Digital",
+    "language": "English",
+    "rating": "M",
+    "tags": ["Open World", "Fantasy", "Story Rich"],
+    "coverImagePath": "/Users/pelinersin/Desktop/CE216_Project_Docs/ce216prj/app/witcher3.jpg"
+  },
+  {
+    "title": "Stardew Valley",
+    "genre": "Simulation",
+    "developer": "ConcernedApe",
+    "publisher": "ConcernedApe",
+    "platforms": ["PC", "PlayStation 4", "Xbox One", "Nintendo Switch", "Mobile"],
+    "translators": [],
+    "steamId": "413150",
+    "releaseYear": 2016,
+    "playtime": 80,
+    "format": "Digital",
+    "language": "English",
+    "rating": "E",
+    "tags": ["Farming", "Relaxing", "Multiplayer"],
+    "coverImagePath": "/Users/pelinersin/Desktop/CE216_Project_Docs/ce216prj/app/cyberpunk.jpg"
+  },
+  {
+    "title": "Hades",
+    "genre": "Action",
+    "developer": "Supergiant Games",
+    "publisher": "Supergiant Games",
+    "platforms": ["PC", "PlayStation 4", "Xbox One", "Nintendo Switch"],
+    "translators": [],
+    "steamId": "1145360",
+    "releaseYear": 2020,
+    "playtime": 60,
+    "format": "Digital",
+    "language": "English",
+    "rating": "T",
+    "tags": ["Roguelike", "Action", "Story Rich"],
+    "coverImagePath": "/Users/pelinersin/Desktop/CE216_Project_Docs/ce216prj/app/eldenring.jpg"
+  },
+
+  {
+    "title": "Portal 2",
+    "genre": "Puzzle",
+    "developer": "Valve",
+    "publisher": "Valve",
+    "platforms": ["PC", "PlayStation 3", "Xbox 360"],
+    "translators": [],
+    "steamId": "620",
+    "releaseYear": 2011,
+    "playtime": 8,
+    "format": "Digital",
+    "language": "English",
+    "rating": "E10+",
+    "tags": ["Puzzle", "Co-op", "First-Person"],
+    "coverImagePath": "/Users/pelinersin/Desktop/CE216_Project_Docs/ce216prj/app/rdr2.jpg"
+  }
+]
