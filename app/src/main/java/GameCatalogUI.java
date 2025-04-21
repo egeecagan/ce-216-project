@@ -133,7 +133,7 @@ public class GameCatalogUI extends Application {
     private VBox createGameCard(Game game) {
         ImageView imageView = new ImageView();
         try {
-            Image image = new Image(game.getImagePath());
+            Image image = new Image(game.getFormattedCoverImagePath());
             imageView.setImage(image);
         } catch (Exception e) {
             // Use placeholder if image fails to load
@@ -164,7 +164,7 @@ public class GameCatalogUI extends Application {
 
         ImageView imageView = new ImageView();
         try {
-            imageView.setImage(new Image(game.getImagePath()));
+            imageView.setImage(new Image(game.getFormattedCoverImagePath()));
         } catch (Exception e) {
             imageView.setImage(new Image("file:placeholder.png"));
         }

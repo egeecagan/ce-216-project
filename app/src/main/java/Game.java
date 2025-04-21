@@ -147,7 +147,21 @@ public class Game {
         this.coverImagePath = coverImagePath;
     }
 
-    // Helper methods for UI
+    public String getFormattedCoverImagePath() {
+        if (coverImagePath == null) {
+            return null;
+        }
+        String trimmed = coverImagePath.trim();
+        if ((trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
+            (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+            trimmed = trimmed.substring(1, trimmed.length() - 1);
+        }
+        if (!trimmed.startsWith("file:")) {
+            trimmed = "file:" + trimmed;
+        }
+        return trimmed;
+    }
+
     public String getYearString() { return String.valueOf(releaseYear); }
     public String getImagePath() { return coverImagePath; }
     public String getPlatformsString() { return String.join(", ", platforms); }
