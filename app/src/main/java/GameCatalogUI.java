@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.ListView;
+
 public class GameCatalogUI extends Application {
     private GameManager gameManager = new GameManager();
     private VBox gameCatalog = new VBox(20);
@@ -105,7 +107,8 @@ public class GameCatalogUI extends Application {
         gamesToDisplay.stream()
                 .collect(Collectors.groupingBy(Game::getGenre))
                 .forEach((genre, games) -> {
-                    if (games.isEmpty()) return;
+                    if (games.isEmpty())
+                        return;
 
                     Text genreTitle = new Text(genre);
                     genreTitle.setFont(Font.font(18));
@@ -302,8 +305,7 @@ public class GameCatalogUI extends Application {
                         "English", // language - not in form
                         "E", // rating - not in form
                         tags,
-                        imageField.getText()
-                );
+                        imageField.getText());
 
                 if (gameToEdit != null) {
                     gameManager.updateGame(gameToEdit, game);
@@ -369,7 +371,8 @@ public class GameCatalogUI extends Application {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Convert the result to a list of selected tags when the apply button is clicked
+        // Convert the result to a list of selected tags when the apply button is
+        // clicked
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == applyButtonType) {
                 return new ArrayList<>(tagsFilter.getSelectionModel().getSelectedItems());
@@ -381,7 +384,10 @@ public class GameCatalogUI extends Application {
 
         result.ifPresent(selectedTags -> {
             String genre = genreFilter.getValue();
-            String year = yearFilter.getText();
+            String year = yearFilter.getText().trim();
+            if (year.isEmpty()) {
+                year = null;
+            }
             List<Game> filteredGames = gameManager.filterGames(genre, year, selectedTags);
 
             gameCatalog.getChildren().clear();
