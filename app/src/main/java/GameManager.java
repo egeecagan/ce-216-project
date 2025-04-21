@@ -1,55 +1,58 @@
+import java.io.File;
 import java.util.List;
 
 public class GameManager {
     private Catalog catalog;
+    private JSONHandler jsonHandler;
 
-
-    public GameManager(Catalog catalog) {
-        this.catalog = catalog;
+    public GameManager() {
+        this.catalog = new Catalog();
+        this.jsonHandler = new JSONHandler();
     }
 
-
-    public void addGame(String title, String genre, String developer, String publisher, List<String> platforms,
-                        List<String> translators, String steamId, int releaseYear, int playtime, String format,
-                        String language, String rating, List<String> tags, String coverImagePath) {
-        Game newGame = new Game(title, genre, developer, publisher, platforms, translators, steamId, releaseYear,
-                playtime, format, language, rating, tags, coverImagePath);
-        catalog.addGame(newGame);
+    public void addGame(Game game) {
+        catalog.addGame(game);
     }
 
- 
-    public void editGame(Game game, String title, String genre, String developer, String publisher,
-                         List<String> platforms, List<String> translators, String steamId, int releaseYear,
-                         int playtime, String format, String language, String rating, List<String> tags,
-                         String coverImagePath) {
-        game.setTitle(title);
-        game.setGenre(genre);
-        game.setDeveloper(developer);
-        game.setPublisher(publisher);
-        game.setPlatforms(platforms);
-        game.setTranslators(translators);
-        game.setSteamId(steamId);
-        game.setReleaseYear(releaseYear);
-        game.setPlaytime(playtime);
-        game.setFormat(format);
-        game.setLanguage(language);
-        game.setRating(rating);
-        game.setTags(tags);
-        game.setCoverImagePath(coverImagePath);
-    }
-
- 
     public void deleteGame(Game game) {
         catalog.removeGame(game);
     }
 
+    public void updateGame(Game original, Game updated) {
+        deleteGame(original);
+        addGame(updated);
+    }
+
+    public List<Game> getAllGames() {
+        return catalog.listGames();
+    }
+
+    public List<String> getGenres() {
+        return catalog.getAllGenres();
+    }
+
+    public List<String> getTags() {
+        return catalog.getAllTags();
+    }
 
     public List<Game> searchGames(String keyword) {
         return catalog.searchGames(keyword);
     }
 
-   
-    public List<Game> filterGamesByTag(String tag) {
-        return catalog.filterByTag(tag);
+    public List<Game> filterGames(String genre, String year, List<String> tags) {
+        return catalog.filterGames(genre, year, tags);
+    }
+
+    public boolean importFromJSON(File file) {
+        List<Game> importedGames = jsonHandler.importFromJSON(file);
+        if (importedGames != null) {
+            importedGames.forEach(this::addGame);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean exportToJSON(File file) {
+        return jsonHandler.exportToJSON(getAllGames(), file);
     }
 }
