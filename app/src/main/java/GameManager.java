@@ -44,9 +44,10 @@ public class GameManager {
     }
 
     public boolean importFromJSON(File file) {
-        // JSONHandler’dan dosyayı okuyup Game listesi alıyoruz
+
         List<Game> importedGames = jsonHandler.importFromJSON(file);
-        if (importedGames == null) return false;
+        if (importedGames == null)
+            return false;
 
         for (Game game : importedGames) {
             boolean exists = catalog.listGames().stream()
@@ -57,7 +58,6 @@ public class GameManager {
         }
         return true;
     }
-
 
     public boolean exportToJSON(File file) {
         return jsonHandler.exportToJSON(getAllGames(), file);
