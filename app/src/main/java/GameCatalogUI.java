@@ -13,12 +13,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import javax.swing.text.html.ListView;
 
 public class GameCatalogUI extends Application {
     private GameManager gameManager = new GameManager();
@@ -86,6 +82,7 @@ public class GameCatalogUI extends Application {
         mainLayout.setCenter(mainScroll);
         mainLayout.setLeft(leftPanel);
         mainLayout.setStyle("-fx-background-color: #34495e;");
+        seedDefaultGames();
 
         // Initial render
         renderCatalog();
@@ -107,8 +104,7 @@ public class GameCatalogUI extends Application {
         gamesToDisplay.stream()
                 .collect(Collectors.groupingBy(Game::getGenre))
                 .forEach((genre, games) -> {
-                    if (games.isEmpty())
-                        return;
+                    if (games.isEmpty()) return;
 
                     Text genreTitle = new Text(genre);
                     genreTitle.setFont(Font.font(18));
@@ -133,10 +129,51 @@ public class GameCatalogUI extends Application {
                 });
     }
 
+    private void seedDefaultGames() {
+        // Vice City
+        Game viceCity = new Game(
+                "GTA: Vice City",
+                "Action-Adventure, Open World",
+                "Rockstar North",
+                "Rockstar Games",
+                Arrays.asList("PC", "PS2", "Xbox"),
+                Collections.emptyList(),
+                "",
+                2002,
+                20,
+                "Digital",
+                "English",
+                "M",
+                Arrays.asList("Open World", "Classic"),
+                "D:\\aliem\\IdeaProjects\\ce216prj_withGUI\\app\\vicecity.jpg"
+        );
+        gameManager.addGame(viceCity);
+
+        // Path of Exile
+        Game poe = new Game(
+                "Path of Exile",
+                "Action RPG, Free-to-Play",
+                "Grinding Gear Games",
+                "Grinding Gear Games",
+                Arrays.asList("PC", "PS4", "Xbox One"),
+                Collections.emptyList(),
+                "",
+                2013,
+                100,
+                "Digital",
+                "English",
+                "M",
+                Arrays.asList("RPG", "Open World", "Free-to-Play"),
+                "D:\\aliem\\IdeaProjects\\ce216prj_withGUI\\app\\pathofexile.jpg"
+        );
+        gameManager.addGame(poe);
+    }
+
+
     private VBox createGameCard(Game game) {
         ImageView imageView = new ImageView();
         try {
-            Image image = new Image(game.getFormattedCoverImagePath());
+            Image image = new Image(game.getImagePath());
             imageView.setImage(image);
         } catch (Exception e) {
             // Use placeholder if image fails to load
@@ -167,7 +204,7 @@ public class GameCatalogUI extends Application {
 
         ImageView imageView = new ImageView();
         try {
-            imageView.setImage(new Image(game.getFormattedCoverImagePath()));
+            imageView.setImage(new Image(game.getImagePath()));
         } catch (Exception e) {
             imageView.setImage(new Image("file:placeholder.png"));
         }
@@ -305,7 +342,8 @@ public class GameCatalogUI extends Application {
                         "English", // language - not in form
                         "E", // rating - not in form
                         tags,
-                        imageField.getText());
+                        imageField.getText()
+                );
 
                 if (gameToEdit != null) {
                     gameManager.updateGame(gameToEdit, game);
@@ -371,8 +409,7 @@ public class GameCatalogUI extends Application {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Convert the result to a list of selected tags when the apply button is
-        // clicked
+        // Convert the result to a list of selected tags when the apply button is clicked
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == applyButtonType) {
                 return new ArrayList<>(tagsFilter.getSelectionModel().getSelectedItems());
@@ -384,10 +421,7 @@ public class GameCatalogUI extends Application {
 
         result.ifPresent(selectedTags -> {
             String genre = genreFilter.getValue();
-            String year = yearFilter.getText().trim();
-            if (year.isEmpty()) {
-                year = null;
-            }
+            String year = yearFilter.getText();
             List<Game> filteredGames = gameManager.filterGames(genre, year, selectedTags);
 
             gameCatalog.getChildren().clear();
