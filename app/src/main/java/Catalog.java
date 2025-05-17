@@ -42,14 +42,13 @@ public class Catalog {
 
         String lowerKeyword = keyword.toLowerCase();
         return games.stream()
-                .filter(game ->
-                        game.getTitle().toLowerCase().contains(lowerKeyword) ||
-                                game.getGenre().toLowerCase().contains(lowerKeyword) ||
-                                game.getDeveloper().toLowerCase().contains(lowerKeyword) ||
-                                game.getPublisher().toLowerCase().contains(lowerKeyword) ||
-                                game.getPlatforms().stream().anyMatch(p -> p.toLowerCase().contains(lowerKeyword)) ||
-                                String.valueOf(game.getReleaseYear()).contains(lowerKeyword) ||
-                                game.getTags().stream().anyMatch(t -> t.toLowerCase().contains(lowerKeyword)))
+                .filter(game -> game.getTitle().toLowerCase().contains(lowerKeyword) ||
+                        game.getGenre().toLowerCase().contains(lowerKeyword) ||
+                        game.getDeveloper().toLowerCase().contains(lowerKeyword) ||
+                        game.getPublisher().toLowerCase().contains(lowerKeyword) ||
+                        game.getPlatforms().stream().anyMatch(p -> p.toLowerCase().contains(lowerKeyword)) ||
+                        String.valueOf(game.getReleaseYear()).contains(lowerKeyword) ||
+                        game.getTags().stream().anyMatch(t -> t.toLowerCase().contains(lowerKeyword)))
                 .collect(Collectors.toList());
     }
 
@@ -63,5 +62,5 @@ public class Catalog {
                         tags.stream().anyMatch(
                                 tag -> game.getTags().stream().anyMatch(gameTag -> gameTag.equalsIgnoreCase(tag))))
                 .collect(Collectors.toList());
-}
+    }
 }
