@@ -19,7 +19,8 @@ public class JSONHandler {
 
     public List<Game> importFromJSON(File file) {
         try (FileReader reader = new FileReader(file)) {
-            Type gameListType = new TypeToken<List<Game>>(){}.getType();
+            Type gameListType = new TypeToken<List<Game>>() {
+            }.getType();
             List<Game> games = gson.fromJson(reader, gameListType);
             return games != null ? games : new ArrayList<>();
         } catch (IOException e) {
