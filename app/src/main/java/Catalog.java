@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Catalog {
-    private List<Game> games;
+    private final List<Game> games;
 
     public Catalog() {
         this.games = new ArrayList<>();
@@ -52,15 +52,19 @@ public class Catalog {
                 .collect(Collectors.toList());
     }
 
-    public List<Game> filterGames(String genre, String year, List<String> tags) {
+    public List<Game> filterGames(List<String> genres,
+            List<String> years,
+            List<String> tags) {
         return games.stream()
-                .filter(game -> genre == null || genre.isEmpty() ||
-                        game.getGenre().toLowerCase().contains(genre.toLowerCase()))
-                .filter(game -> year == null || year.isEmpty() ||
-                        String.valueOf(game.getReleaseYear()).equals(year))
-                .filter(game -> tags == null || tags.isEmpty() ||
-                        tags.stream().anyMatch(
-                                tag -> game.getTags().stream().anyMatch(gameTag -> gameTag.equalsIgnoreCase(tag))))
+
+                .filter(g -> genres == null || genres.isEmpty()
+                        || genres.contains(g.getGenre()))
+
+                .filter(g -> years == null || years.isEmpty()
+                        || years.contains(String.valueOf(g.getReleaseYear())))
+
+                .filter(g -> tags == null || tags.isEmpty()
+                        || g.getTags().stream().anyMatch(tags::contains))
                 .collect(Collectors.toList());
     }
 }

@@ -11,7 +11,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class JSONHandler {
-    private Gson gson;
+    private final Gson gson;
+
+    
 
     public JSONHandler() {
         this.gson = new GsonBuilder().setPrettyPrinting().create();
@@ -22,7 +24,11 @@ public class JSONHandler {
             Type gameListType = new TypeToken<List<Game>>() {
             }.getType();
             List<Game> games = gson.fromJson(reader, gameListType);
+            
             return games != null ? games : new ArrayList<>();
+
+            
+
         } catch (IOException e) {
             System.err.println("Error reading JSON file: " + e.getMessage());
             return new ArrayList<>();

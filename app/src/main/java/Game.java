@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.List;
 
 public class Game {
@@ -153,15 +154,11 @@ public class Game {
         if (coverImagePath == null) {
             return null;
         }
-        String trimmed = coverImagePath.trim();
-        if ((trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
-                (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-            trimmed = trimmed.substring(1, trimmed.length() - 1);
-        }
-        if (!trimmed.startsWith("file:")) {
-            trimmed = "file:" + trimmed;
-        }
-        return trimmed;
+        String cleanedName = this.getTitle().toLowerCase().replaceAll("\\s+", "");
+        File imageFile = new File("images", cleanedName + ".jpg");
+        String absPath = imageFile.toURI().getPath();
+        
+        return "file:" + absPath;
     }
 
     // Helper methods for UI
