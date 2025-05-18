@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,8 @@ public class Catalog {
 
     public List<String> getAllGenres() {
         return games.stream()
-                .map(Game::getGenre)
+                .flatMap(game -> Arrays.stream(game.getGenre().split(",")))
+                .map(String::trim)
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -52,19 +54,26 @@ public class Catalog {
                 .collect(Collectors.toList());
     }
 
-    public List<Game> filterGames(List<String> genres,
-            List<String> years,
-            List<String> tags) {
+    public List<Game> filterGames(List<String> genres, List<String> years, List<String> tags) {
+
         return games.stream()
-
-                .filter(g -> genres == null || genres.isEmpty()
-                        || genres.contains(g.getGenre()))
-
-                .filter(g -> years == null || years.isEmpty()
-                        || years.contains(String.valueOf(g.getReleaseYear())))
-
-                .filter(g -> tags == null || tags.isEmpty()
-                        || g.getTags().stream().anyMatch(tags::contains))
+                .filter(game -> {
+                    if (genres == null || genres.isEmpty())
+                        return true;
+                    List<String> gameGenres = Arrays.asList(game.getGenre().split(",")).stream().map(String::trim)
+                            .collect(Collectors.toList());
+                    return genres.stream().allMatch(gameGenres::contains);
+                })
+                .filter(game -> {
+                    if (years == null || years.isEmpty())
+                        return true;
+                    return years.contains(String.valueOf(game.getReleaseYear()));
+                })
+                .filter(game -> {
+                    if (tags == null || tags.isEmpty())
+                        return true;
+                    return tags.stream().allMatch(game.getTags()::contains);
+                })
                 .collect(Collectors.toList());
     }
 }
