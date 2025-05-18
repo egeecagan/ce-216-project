@@ -2,11 +2,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.HPos;
@@ -31,6 +34,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -420,36 +424,43 @@ public class GameCatalogUI extends Application {
                 new ButtonType("Apply", ButtonBar.ButtonData.OK_DONE),
                 ButtonType.CANCEL);
 
+        List<String> allGenres = gameManager.getGenres();
+        Map<String, BooleanProperty> genreChecked = new HashMap<>();
+        for (String genre : allGenres) {
+            genreChecked.put(genre, new SimpleBooleanProperty(false));
+        }
+
         // Genre ListView with checkboxes
-        ListView<String> genreList = new ListView<>(
-                FXCollections.observableArrayList(gameManager.getGenres()));
-        genreList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        genreList.setCellFactory(CheckBoxListCell.forListView(item -> new SimpleBooleanProperty(
-                genreList.getSelectionModel().getSelectedItems().contains(item))));
-        genreList.setPrefSize(200, 120);
+        ListView<String> genreList = new ListView<>(FXCollections.observableArrayList(allGenres));
+        genreList.setCellFactory(CheckBoxListCell.forListView(genreChecked::get));
+        genreList.setPrefSize(300, 200);
 
         // Year TextField
         TextField yearField = new TextField();
         yearField.setPromptText("Enter Year (e.g. 2020)");
 
+        List<String> allTags = gameManager.getTags();
+        Map<String, BooleanProperty> tagsChecked = new HashMap<>();
+        for (String tag : allTags) {
+            tagsChecked.put(tag, new SimpleBooleanProperty(false));
+        }
+
         // Tags ListView with checkboxes
-        ListView<String> tagsList = new ListView<>(
-                FXCollections.observableArrayList(gameManager.getTags()));
-        tagsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tagsList.setCellFactory(CheckBoxListCell.forListView(item -> new SimpleBooleanProperty(
-                tagsList.getSelectionModel().getSelectedItems().contains(item))));
-        tagsList.setPrefSize(200, 120);
+        ListView<String> tagsList = new ListView<>(FXCollections.observableArrayList(allTags));
+        tagsList.setCellFactory(CheckBoxListCell.forListView(tagsChecked::get));
+        tagsList.setPrefSize(300, 200);
 
         // Layout
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setPadding(new Insets(10, 10, 10, 10));
 
         ColumnConstraints c1 = new ColumnConstraints();
+        c1.setMinWidth(80);
         c1.setHalignment(HPos.RIGHT);
         ColumnConstraints c2 = new ColumnConstraints();
-        c2.setPrefWidth(200);
+        c2.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(c1, c2);
 
         grid.add(new Label("Genres:"), 0, 0);
@@ -464,19 +475,26 @@ public class GameCatalogUI extends Application {
 
         Optional<ButtonType> result = dialog.showAndWait();
         if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
-            List<String> selGenres = new ArrayList<>(genreList.getSelectionModel().getSelectedItems());
+
+            List<String> selGenres = genreChecked.entrySet().stream()
+                    .filter(entry -> entry.getValue().get())
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
 
             String yearText = yearField.getText().trim();
             List<String> selYears = yearText.isEmpty()
                     ? Collections.emptyList()
                     : Collections.singletonList(yearText);
 
-            List<String> selTags = new ArrayList<>(tagsList.getSelectionModel().getSelectedItems());
+            List<String> selTags = tagsChecked.entrySet().stream()
+                    .filter(entry -> entry.getValue().get())
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
 
             List<Game> filtered = gameManager.filterGames(selGenres, selYears, selTags);
             gameCatalog.getChildren().clear();
             if (filtered.isEmpty()) {
-                gameCatalog.getChildren().add(new Text("No games match the selected filters"));
+                gameCatalog.getChildren().add(new Text("No games found matching the selected filters!"));
             } else {
                 filtered.forEach(g -> gameCatalog.getChildren().add(createGameCard(g)));
             }
