@@ -318,6 +318,8 @@ public class GameCatalogUI extends Application {
         TextField playtimeField = new TextField();
         TextField platformsField = new TextField();
         TextField tagsField = new TextField();
+        TextField steamIdField = new TextField();
+        steamIdField.setPromptText("Steam ID");
 
 
         // Pre-fill fields if editing
@@ -330,6 +332,7 @@ public class GameCatalogUI extends Application {
             playtimeField.setText(String.valueOf(gameToEdit.getPlaytime()));
             platformsField.setText(String.join(", ", gameToEdit.getPlatforms()));
             tagsField.setText(String.join(", ", gameToEdit.getTags()));
+            steamIdField.setText(gameToEdit.getSteamId());
 
         }
 
@@ -355,6 +358,9 @@ public class GameCatalogUI extends Application {
         form.add(platformsField, 1, 6);
         form.add(new Label("Tags (comma separated):"), 0, 7);
         form.add(tagsField, 1, 7);
+        form.add(new Label("Steam ID:"), 0, 8);
+        form.add(steamIdField, 1, 8);
+
 
 
         // Add buttons
@@ -371,7 +377,7 @@ public class GameCatalogUI extends Application {
                         publisherField.getText(),
                         platforms,
                         new ArrayList<>(), // translators - not in form
-                        "", // steamId - not in form
+                        steamIdField.getText().trim(), // steamId
                         Integer.parseInt(yearField.getText()),
                         Integer.parseInt(playtimeField.getText()),
                         "Digital", // format - not in form
