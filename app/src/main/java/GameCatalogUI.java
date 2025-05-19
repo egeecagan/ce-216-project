@@ -16,7 +16,16 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -318,9 +327,7 @@ public class GameCatalogUI extends Application {
         TextField playtimeField = new TextField();
         TextField platformsField = new TextField();
         TextField tagsField = new TextField();
-        TextField steamIdField = new TextField();
-        steamIdField.setPromptText("Steam ID");
-
+        
 
         // Pre-fill fields if editing
         if (gameToEdit != null) {
@@ -332,8 +339,7 @@ public class GameCatalogUI extends Application {
             playtimeField.setText(String.valueOf(gameToEdit.getPlaytime()));
             platformsField.setText(String.join(", ", gameToEdit.getPlatforms()));
             tagsField.setText(String.join(", ", gameToEdit.getTags()));
-            steamIdField.setText(gameToEdit.getSteamId());
-
+            
         }
 
         // Create form
@@ -358,10 +364,7 @@ public class GameCatalogUI extends Application {
         form.add(platformsField, 1, 6);
         form.add(new Label("Tags (comma separated):"), 0, 7);
         form.add(tagsField, 1, 7);
-        form.add(new Label("Steam ID:"), 0, 8);
-        form.add(steamIdField, 1, 8);
-
-
+        
 
         // Add buttons
         Button saveButton = new Button("Save");
@@ -377,7 +380,7 @@ public class GameCatalogUI extends Application {
                         publisherField.getText(),
                         platforms,
                         new ArrayList<>(), // translators - not in form
-                        steamIdField.getText().trim(), // steamId
+                        "", // steamId - not in form
                         Integer.parseInt(yearField.getText()),
                         Integer.parseInt(playtimeField.getText()),
                         "Digital", // format - not in form
@@ -532,57 +535,31 @@ public class GameCatalogUI extends Application {
     }
 
     private void showHelpDialog() {
-        Alert helpDialog = new Alert(Alert.AlertType.INFORMATION);
-        helpDialog.setTitle("User Manual - Game Catalog");
-        helpDialog.setHeaderText("Welcome to the Game Collection Catalog Help Section");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Game Catalog Help");
+        alert.setHeaderText("How to use the Game Catalog");
 
-        String content = """
-        This application helps you manage your video game collection efficiently.
+        String helpText = "1. Adding Games:\n" +
+                "   - Click 'Add Game' and fill in all required fields\n" +
+                "   - Required fields: Title, Genre, Developer, Publisher, Year\n\n" +
+                "2. Editing Games:\n" +
+                "   - Click on a game to view details\n" +
+                "   - Click 'Edit' to modify game information\n\n" +
+                "3. Deleting Games:\n" +
+                "   - Click on a game to view details\n" +
+                "   - Click 'Delete' to remove the game\n\n" +
+                "4. Searching:\n" +
+                "   - Type in the search box to find games by title, genre, etc.\n\n" +
+                "5. Filtering:\n" +
+                "   - Click 'Filter' to filter by genre, year, or tags\n\n" +
+                "6. Import/Export:\n" +
+                "   - Use these buttons to load or save your game collection as JSON\n\n" +
+                "Note: For cover images, provide the full path to the image file.";
 
-        🔹 Adding a Game:
-           - Click the 'Add' button.
-           - Fill in the fields such as title, genre, developer, etc.
-           - Click 'Save' to add the game to your collection.
-
-        🔹 Editing a Game:
-           - Select a game from the list.
-           - Click the 'Edit' button.
-           - Modify the fields and click 'Save'.
-
-        🔹 Deleting a Game:
-           - Select a game from the list.
-           - Click the 'Delete' button.
-
-        🔹 Searching:
-           - Use the search bar to find games by title, developer, publisher, or tags.
-
-        🔹 Filtering:
-           - Use genre dropdown, year input or tags list to filter games.
-           - Multiple filters can be applied together.
-
-        🔹 Importing/Exporting:
-           - Click 'Import' to load games from a JSON file.
-           - Click 'Export' to save the current list to a JSON file.
-
-        🔹 Cover Image:
-           - Add a cover image when adding or editing a game.
-           - Image must be a valid file path (e.g., D:\\covers\\game.jpg)
-
-        💡 Tip:
-           - Hover over fields for tooltips.
-           - All changes are saved in JSON format locally.
-
-        For further help, contact: support@gamecatalogapp.com
-        """;
-
-        TextArea textArea = new TextArea(content);
-        textArea.setWrapText(true);
-        textArea.setEditable(false);
-        textArea.setPrefSize(600, 400);
-
-        DialogPane dialogPane = helpDialog.getDialogPane();
-        dialogPane.setContent(textArea);
-        helpDialog.showAndWait();
+        alert.setContentText(helpText);
+        alert.setResizable(true);
+        alert.getDialogPane().setPrefSize(500, 400);
+        alert.showAndWait();
     }
 
     private void showAlert(String title, String message) {
