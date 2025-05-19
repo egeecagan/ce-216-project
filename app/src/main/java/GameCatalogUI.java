@@ -1,28 +1,43 @@
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
+
 
 public class GameCatalogUI extends Application {
-    private GameManager gameManager = new GameManager();
-    private VBox gameCatalog = new VBox(20);
+    private final GameManager gameManager = new GameManager();
+    private final VBox gameCatalog = new VBox(20);
     private TextField searchField;
-    private ComboBox<String> genreFilter;
-    private TextField yearFilter;
-    private ListView<String> tagsFilter;
 
     @Override
     public void start(Stage primaryStage) {
@@ -31,18 +46,33 @@ public class GameCatalogUI extends Application {
         logo.setFont(Font.font(24));
         logo.setFill(Color.WHITE);
 
+        // Search field
         searchField = new TextField();
         searchField.setPromptText("Search games...");
         searchField.setPrefWidth(300);
         searchField.textProperty().addListener((obs, oldVal, newVal) -> renderCatalog());
 
+        // Home button: reset filters / search
+        Button homeButton = new Button("Home");
+        homeButton.setOnAction(e -> {
+            searchField.clear();
+            renderCatalog();
+        });
+        homeButton.setPrefWidth(60);
+
+        // Filter & Help buttons
         Button filterButton = new Button("Filter");
         filterButton.setOnAction(e -> showFilterDialog());
 
         Button helpButton = new Button("Help");
         helpButton.setOnAction(e -> showHelpDialog());
 
-        HBox searchBox = new HBox(10, searchField, filterButton, helpButton);
+        // Assemble search bar: Home | Search | Filter | Help
+        HBox searchBox = new HBox(10,
+                homeButton,
+                searchField,
+                filterButton,
+                helpButton);
         searchBox.setAlignment(Pos.CENTER);
 
         VBox header = new VBox(10, logo, searchBox);
@@ -53,7 +83,6 @@ public class GameCatalogUI extends Application {
         // Game catalog area
         gameCatalog.setPadding(new Insets(10));
         gameCatalog.setStyle("-fx-background-color: #34495e;");
-
         ScrollPane mainScroll = new ScrollPane(gameCatalog);
         mainScroll.setFitToWidth(true);
         mainScroll.setStyle("-fx-background: #34495e;");
@@ -82,16 +111,24 @@ public class GameCatalogUI extends Application {
         mainLayout.setCenter(mainScroll);
         mainLayout.setLeft(leftPanel);
         mainLayout.setStyle("-fx-background-color: #34495e;");
-        seedDefaultGames();
 
-        // Initial render
+        // Seed and initial render
+        seedDefaultGames();
         renderCatalog();
 
-        // Set up the scene and stage
+        // Show stage
         Scene scene = new Scene(mainLayout, 1000, 700);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Video Game Catalog");
         primaryStage.show();
+    }
+
+    private String pathCreator(String gameName) {
+        String cleanedName = gameName.toLowerCase().replaceAll("\\s+", "");
+        //File imageFile = new File("images", cleanedName + ".jpg");
+        //String ppp = imageFile.toURI().toString();
+        String ppp = cleanedName + ".jpg";
+        return ppp;
     }
 
     private void renderCatalog() {
@@ -104,7 +141,8 @@ public class GameCatalogUI extends Application {
         gamesToDisplay.stream()
                 .collect(Collectors.groupingBy(Game::getGenre))
                 .forEach((genre, games) -> {
-                    if (games.isEmpty()) return;
+                    if (games.isEmpty())
+                        return;
 
                     Text genreTitle = new Text(genre);
                     genreTitle.setFont(Font.font(18));
@@ -129,10 +167,12 @@ public class GameCatalogUI extends Application {
                 });
     }
 
+
+
     private void seedDefaultGames() {
         // Vice City
         Game viceCity = new Game(
-                "GTA: Vice City",
+                "GTA Vice City",
                 "Action-Adventure, Open World",
                 "Rockstar North",
                 "Rockstar Games",
@@ -145,8 +185,7 @@ public class GameCatalogUI extends Application {
                 "English",
                 "M",
                 Arrays.asList("Open World", "Classic"),
-                "D:\\aliem\\IdeaProjects\\ce216prj_withGUI\\app\\vicecity.jpg"
-        );
+                pathCreator("GTA Vice City") ); // this is the image path
         gameManager.addGame(viceCity);
 
         // Path of Exile
@@ -164,16 +203,14 @@ public class GameCatalogUI extends Application {
                 "English",
                 "M",
                 Arrays.asList("RPG", "Open World", "Free-to-Play"),
-                "D:\\aliem\\IdeaProjects\\ce216prj_withGUI\\app\\pathofexile.jpg"
-        );
+                pathCreator("Path of Exile"));
         gameManager.addGame(poe);
     }
-
 
     private VBox createGameCard(Game game) {
         ImageView imageView = new ImageView();
         try {
-            Image image = new Image(game.getImagePath());
+            Image image = new Image(game.getFormattedCoverImagePath());
             imageView.setImage(image);
         } catch (Exception e) {
             // Use placeholder if image fails to load
@@ -204,7 +241,7 @@ public class GameCatalogUI extends Application {
 
         ImageView imageView = new ImageView();
         try {
-            imageView.setImage(new Image(game.getImagePath()));
+            imageView.setImage(new Image(game.getFormattedCoverImagePath()));
         } catch (Exception e) {
             imageView.setImage(new Image("file:placeholder.png"));
         }
@@ -281,7 +318,7 @@ public class GameCatalogUI extends Application {
         TextField playtimeField = new TextField();
         TextField platformsField = new TextField();
         TextField tagsField = new TextField();
-        TextField imageField = new TextField();
+
 
         // Pre-fill fields if editing
         if (gameToEdit != null) {
@@ -293,7 +330,7 @@ public class GameCatalogUI extends Application {
             playtimeField.setText(String.valueOf(gameToEdit.getPlaytime()));
             platformsField.setText(String.join(", ", gameToEdit.getPlatforms()));
             tagsField.setText(String.join(", ", gameToEdit.getTags()));
-            imageField.setText(gameToEdit.getImagePath());
+
         }
 
         // Create form
@@ -318,8 +355,7 @@ public class GameCatalogUI extends Application {
         form.add(platformsField, 1, 6);
         form.add(new Label("Tags (comma separated):"), 0, 7);
         form.add(tagsField, 1, 7);
-        form.add(new Label("Cover Image Path:"), 0, 8);
-        form.add(imageField, 1, 8);
+
 
         // Add buttons
         Button saveButton = new Button("Save");
@@ -342,8 +378,7 @@ public class GameCatalogUI extends Application {
                         "English", // language - not in form
                         "E", // rating - not in form
                         tags,
-                        imageField.getText()
-                );
+                        titleField.getText().toLowerCase().replaceAll("\\s+", "") + ".jpg");
 
                 if (gameToEdit != null) {
                     gameManager.updateGame(gameToEdit, game);
@@ -374,83 +409,87 @@ public class GameCatalogUI extends Application {
     }
 
     private void showFilterDialog() {
-        Dialog<List<String>> dialog = new Dialog<>();
+        Dialog<ButtonType> dialog = new Dialog<>();
         dialog.setTitle("Filter Games");
-        dialog.setHeaderText("Select filters to apply");
+        dialog.getDialogPane().getButtonTypes().addAll(
+                new ButtonType("Apply", ButtonBar.ButtonData.OK_DONE),
+                ButtonType.CANCEL);
 
-        // Set the button types
-        ButtonType applyButtonType = new ButtonType("Apply", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(applyButtonType, ButtonType.CANCEL);
+        List<String> allGenres = gameManager.getGenres();
+        Map<String, BooleanProperty> genreChecked = new HashMap<>();
+        for (String genre : allGenres) {
+            genreChecked.put(genre, new SimpleBooleanProperty(false));
+        }
 
-        // Create filter controls
-        genreFilter = new ComboBox<>();
-        genreFilter.getItems().addAll(gameManager.getGenres());
-        genreFilter.setPromptText("Select Genre");
+        // Genre ListView with checkboxes
+        ListView<String> genreList = new ListView<>(FXCollections.observableArrayList(allGenres));
+        genreList.setCellFactory(CheckBoxListCell.forListView(genreChecked::get));
+        genreList.setPrefSize(300, 200);
 
-        yearFilter = new TextField();
-        yearFilter.setPromptText("Enter Year");
+        // Year TextField
+        TextField yearField = new TextField();
+        yearField.setPromptText("Enter Year (e.g. 2020)");
 
-        tagsFilter = new ListView<>();
-        tagsFilter.getItems().addAll(gameManager.getTags());
-        tagsFilter.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        tagsFilter.setPrefHeight(150);
+        List<String> allTags = gameManager.getTags();
+        Map<String, BooleanProperty> tagsChecked = new HashMap<>();
+        for (String tag : allTags) {
+            tagsChecked.put(tag, new SimpleBooleanProperty(false));
+        }
 
+        // Tags ListView with checkboxes
+        ListView<String> tagsList = new ListView<>(FXCollections.observableArrayList(allTags));
+        tagsList.setCellFactory(CheckBoxListCell.forListView(tagsChecked::get));
+        tagsList.setPrefSize(300, 200);
+
+        // Layout
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setPadding(new Insets(10, 10, 10, 10));
 
-        grid.add(new Label("Genre:"), 0, 0);
-        grid.add(genreFilter, 1, 0);
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setMinWidth(80);
+        c1.setHalignment(HPos.RIGHT);
+        ColumnConstraints c2 = new ColumnConstraints();
+        c2.setHgrow(Priority.ALWAYS);
+        grid.getColumnConstraints().addAll(c1, c2);
+
+        grid.add(new Label("Genres:"), 0, 0);
+        grid.add(genreList, 1, 0);
         grid.add(new Label("Year:"), 0, 1);
-        grid.add(yearFilter, 1, 1);
+        grid.add(yearField, 1, 1);
         grid.add(new Label("Tags:"), 0, 2);
-        grid.add(tagsFilter, 1, 2);
+        grid.add(tagsList, 1, 2);
 
         dialog.getDialogPane().setContent(grid);
+        dialog.getDialogPane().setPrefSize(400, 500);
 
-        // Convert the result to a list of selected tags when the apply button is clicked
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == applyButtonType) {
-                return new ArrayList<>(tagsFilter.getSelectionModel().getSelectedItems());
-            }
-            return null;
-        });
+        Optional<ButtonType> result = dialog.showAndWait();
+        if (result.isPresent() && result.get().getButtonData() == ButtonBar.ButtonData.OK_DONE) {
 
-        Optional<List<String>> result = dialog.showAndWait();
+            List<String> selGenres = genreChecked.entrySet().stream()
+                    .filter(entry -> entry.getValue().get())
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
 
-        result.ifPresent(selectedTags -> {
-            String genre = genreFilter.getValue();
-            String year = yearFilter.getText();
-            List<Game> filteredGames = gameManager.filterGames(genre, year, selectedTags);
+            String yearText = yearField.getText().trim();
+            List<String> selYears = yearText.isEmpty()
+                    ? Collections.emptyList()
+                    : Collections.singletonList(yearText);
 
+            List<String> selTags = tagsChecked.entrySet().stream()
+                    .filter(entry -> entry.getValue().get())
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+
+            List<Game> filtered = gameManager.filterGames(selGenres, selYears, selTags);
             gameCatalog.getChildren().clear();
-            if (!filteredGames.isEmpty()) {
-                Text filterTitle = new Text("Filtered Results");
-                filterTitle.setFont(Font.font(18));
-                filterTitle.setFill(Color.WHITE);
-
-                HBox gameRow = new HBox(20);
-                gameRow.setAlignment(Pos.CENTER_LEFT);
-                gameRow.setPadding(new Insets(10));
-
-                for (Game game : filteredGames) {
-                    gameRow.getChildren().add(createGameCard(game));
-                }
-
-                ScrollPane scrollPane = new ScrollPane(gameRow);
-                scrollPane.setFitToHeight(true);
-                scrollPane.setStyle("-fx-background: transparent;");
-
-                VBox filterSection = new VBox(10, filterTitle, scrollPane);
-                gameCatalog.getChildren().add(filterSection);
+            if (filtered.isEmpty()) {
+                gameCatalog.getChildren().add(new Text("No games found matching the selected filters!"));
             } else {
-                Text noResults = new Text("No games match the selected filters");
-                noResults.setFont(Font.font(16));
-                noResults.setFill(Color.WHITE);
-                gameCatalog.getChildren().add(noResults);
+                filtered.forEach(g -> gameCatalog.getChildren().add(createGameCard(g)));
             }
-        });
+        }
     }
 
     private void importGames(Stage primaryStage) {
@@ -487,31 +526,57 @@ public class GameCatalogUI extends Application {
     }
 
     private void showHelpDialog() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Game Catalog Help");
-        alert.setHeaderText("How to use the Game Catalog");
+        Alert helpDialog = new Alert(Alert.AlertType.INFORMATION);
+        helpDialog.setTitle("User Manual - Game Catalog");
+        helpDialog.setHeaderText("Welcome to the Game Collection Catalog Help Section");
 
-        String helpText = "1. Adding Games:\n" +
-                "   - Click 'Add Game' and fill in all required fields\n" +
-                "   - Required fields: Title, Genre, Developer, Publisher, Year\n\n" +
-                "2. Editing Games:\n" +
-                "   - Click on a game to view details\n" +
-                "   - Click 'Edit' to modify game information\n\n" +
-                "3. Deleting Games:\n" +
-                "   - Click on a game to view details\n" +
-                "   - Click 'Delete' to remove the game\n\n" +
-                "4. Searching:\n" +
-                "   - Type in the search box to find games by title, genre, etc.\n\n" +
-                "5. Filtering:\n" +
-                "   - Click 'Filter' to filter by genre, year, or tags\n\n" +
-                "6. Import/Export:\n" +
-                "   - Use these buttons to load or save your game collection as JSON\n\n" +
-                "Note: For cover images, provide the full path to the image file.";
+        String content = """
+        This application helps you manage your video game collection efficiently.
 
-        alert.setContentText(helpText);
-        alert.setResizable(true);
-        alert.getDialogPane().setPrefSize(500, 400);
-        alert.showAndWait();
+        🔹 Adding a Game:
+           - Click the 'Add' button.
+           - Fill in the fields such as title, genre, developer, etc.
+           - Click 'Save' to add the game to your collection.
+
+        🔹 Editing a Game:
+           - Select a game from the list.
+           - Click the 'Edit' button.
+           - Modify the fields and click 'Save'.
+
+        🔹 Deleting a Game:
+           - Select a game from the list.
+           - Click the 'Delete' button.
+
+        🔹 Searching:
+           - Use the search bar to find games by title, developer, publisher, or tags.
+
+        🔹 Filtering:
+           - Use genre dropdown, year input or tags list to filter games.
+           - Multiple filters can be applied together.
+
+        🔹 Importing/Exporting:
+           - Click 'Import' to load games from a JSON file.
+           - Click 'Export' to save the current list to a JSON file.
+
+        🔹 Cover Image:
+           - Add a cover image when adding or editing a game.
+           - Image must be a valid file path (e.g., D:\\covers\\game.jpg)
+
+        💡 Tip:
+           - Hover over fields for tooltips.
+           - All changes are saved in JSON format locally.
+
+        For further help, contact: support@gamecatalogapp.com
+        """;
+
+        TextArea textArea = new TextArea(content);
+        textArea.setWrapText(true);
+        textArea.setEditable(false);
+        textArea.setPrefSize(600, 400);
+
+        DialogPane dialogPane = helpDialog.getDialogPane();
+        dialogPane.setContent(textArea);
+        helpDialog.showAndWait();
     }
 
     private void showAlert(String title, String message) {

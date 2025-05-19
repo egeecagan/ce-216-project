@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.List;
 
 public class Game {
@@ -9,13 +10,14 @@ public class Game {
     private List<String> translators;
     private String steamId;
     private int releaseYear;
-    private int playtime;  // in hours
-    private String format;  // e.g., Digital, Physical
+    private int playtime; // in hours
+    private String format; // e.g., Digital, Physical
     private String language;
     private String rating;
     private List<String> tags;
     private String coverImagePath;
 
+    // Constructor
     public Game(String title, String genre, String developer, String publisher, List<String> platforms,
                 List<String> translators, String steamId, int releaseYear, int playtime, String format,
                 String language, String rating, List<String> tags, String coverImagePath) {
@@ -35,6 +37,7 @@ public class Game {
         this.coverImagePath = coverImagePath;
     }
 
+    // Getters and Setters for all attributes
     public String getTitle() {
         return title;
     }
@@ -151,22 +154,31 @@ public class Game {
         if (coverImagePath == null) {
             return null;
         }
-        String trimmed = coverImagePath.trim();
-        if ((trimmed.startsWith("\"") && trimmed.endsWith("\"")) ||
-            (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-            trimmed = trimmed.substring(1, trimmed.length() - 1);
-        }
-        if (!trimmed.startsWith("file:")) {
-            trimmed = "file:" + trimmed;
-        }
-        return trimmed;
+        String cleanedName = this.getTitle().toLowerCase().replaceAll("\\s+", "");
+        File imageFile = new File("images", cleanedName + ".jpg");
+        String absPath = imageFile.toURI().getPath();
+
+        return "file:" + absPath;
     }
 
-    public String getYearString() { return String.valueOf(releaseYear); }
-    public String getImagePath() { return coverImagePath; }
-    public String getPlatformsString() { return String.join(", ", platforms); }
-    public String getTagsString() { return String.join(", ", tags); }
+    // Helper methods for UI
+    public String getYearString() {
+        return String.valueOf(releaseYear);
+    }
 
+    public String getImagePath() {
+        return coverImagePath;
+    }
+
+    public String getPlatformsString() {
+        return String.join(", ", platforms);
+    }
+
+    public String getTagsString() {
+        return String.join(", ", tags);
+    }
+
+    // toString method for easy representation
     @Override
     public String toString() {
         return "Game{" +
